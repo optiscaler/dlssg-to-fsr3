@@ -1,0 +1,82 @@
+name: 'Build and publish artifacts'
+
+on:
+  push:
+    branches: ['master', 'gh-actions']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+
+jobs:
+  build-and-package:
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up GitHub Actions cache environment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      # https://github.com/actions/runner-images/issues/6376
+      - name: Set up Vcpkg environment
+        shell: bash
+        run: |
+          echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
+
+      # Custom step is required because vcvarsall doesn't persist otherwise. VS2022 is the only option on windows-2022 runners.
+      - name: Set up VS2022 toolset
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Install and set up Vulkan SDK
+        uses: humbletim/install-vulkan-sdk@v1.1.1
+        with:
+          version: latest
+          cache: false
+
+      # Needed to build FSR
+      - name: Download and extract WinPixEventRuntime.dll
+        shell: pwsh
+        run: |
+          $url = "https://www.nuget.org/api/v2/package/WinPixEventRuntime/1.0.240308001"
+          $nupkgPath = "$env:RUNNER_TEMP\WinPixEventRuntime.nupkg"
+          $extractPath = "$env:RUNNER_TEMP\WinPixExtracted"
+          $destinationDir = "${{ github.workspace }}\dependencies\FidelityFX-SDK\sdk\libs\pix\bin\x64"
+          $dllRelativePath = "bin\x64\WinPixEventRuntime.dll"
+          $dllExtractedPath = Join-Path $extractPath $dllRelativePath
+
+          Invoke-WebRequest -Uri $url -OutFile $nupkgPath
+          Expand-Archive -Path $nupkgPath -DestinationPath $extractPath -Force
+
+          New-Item -ItemType Directory -Force -Path $destinationDir
+          Copy-Item -Path $dllExtractedPath -Destination $destinationDir -Force
+
+      - name: Build and set up FidelityFX SDK
+        shell: cmd
+        run: |
+          ${{ github.workspace }}/dependencies/Build-FFX-SDK.bat
+
+      # All variants get built here since I don't want to burn my action minutes on the Vulkan and FFX SDKs
+      - name: Build dlssg-to-fsr3
+        shell: pwsh
+        run: |
+          ${{ github.workspace }}/Make-Release.ps1
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'dlssg-to-fsr3-ci-test'
+          path: |
+            ${{ github.workspace }}/bin/built-packages/*.zip
+          if-no-files-found: error
