@@ -19,6 +19,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: Set up GitHub Actions cache environment
         uses: actions/github-script@v7
@@ -42,8 +45,8 @@ jobs:
       - name: Install and set up Vulkan SDK
         uses: humbletim/install-vulkan-sdk@v1.2
         with:
-          version: latest
-          cache: false
+          version: 1.4.309.0
+          cache: true
 
       # Needed to build FSR
       - name: Download and extract WinPixEventRuntime.dll
