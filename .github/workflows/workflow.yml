@@ -2,7 +2,7 @@ name: 'Build and publish artifacts'
 
 on:
   push:
-    branches: ['master', 'gh-actions', 'michau-build']
+    branches: ['master', 'gh-actions']
   workflow_dispatch:
 
 permissions:
