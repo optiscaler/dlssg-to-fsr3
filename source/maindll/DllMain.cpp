@@ -45,7 +45,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstDLL, DWORD fdwReason, LPVOID lpvReserved)
 
 		spdlog::warn("");
 		spdlog::warn(
-			"dlssg-to-fsr3 v{}.{} loaded. AMD FSR 3.1 Frame Generation will replace Nvidia DLSS-G Frame Generation. Note this does NOT "
+			"dlssg-to-fsr3 v{}.{} (OptiScaler build) loaded. AMD FSR 3.1 Frame Generation will replace Nvidia DLSS-G Frame Generation. Note this does NOT "
 			"represent a native",
 			BUILD_VERSION_MAJOR,
 			BUILD_VERSION_MINOR);
