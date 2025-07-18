@@ -9,14 +9,18 @@ if ((Get-Command "cmake" -ErrorAction SilentlyContinue) -eq $null) {
 }
 
 # Then build with VS
-& cmake --preset final-dtwrapper
-& cmake --build --preset final-dtwrapper-release
-& cpack --preset final-dtwrapper
+# & cmake --preset final-dtwrapper
+# & cmake --build --preset final-dtwrapper-release
+# & cpack --preset final-dtwrapper
 
-& cmake --preset final-nvngxwrapper
-& cmake --build --preset final-nvngxwrapper-release
-& cpack --preset final-nvngxwrapper
+# & cmake --preset final-nvngxwrapper
+# & cmake --build --preset final-nvngxwrapper-release
+# & cpack --preset final-nvngxwrapper
 
-& cmake --preset final-universal
-& cmake --build --preset final-universal-release
-& cpack --preset final-universal
+# & cmake --preset final-universal
+# & cmake --build --preset final-universal-release
+# & cpack --preset final-universal
+
+& cmake --preset final-noloader
+& cmake --build --preset final-noloader-release
+& cpack --preset final-noloader

@@ -82,6 +82,15 @@
       "inherits": [
         "configuration-final"
       ]
+    },
+    {
+      "name": "final-noloader",
+      "cacheVariables": {
+        "BUILD_OUTPUT_WRAPPER": "NOLOADER"
+      },
+      "inherits": [
+        "configuration-final"
+      ]
     }
   ],
   "buildPresets": [
@@ -120,6 +129,18 @@
       "configurePreset": "final-nvngxwrapper",
       "configuration": "Release",
       "displayName": "Nvngx Release x64"
+    },
+    {
+      "name": "final-noloader-debug",
+      "configurePreset": "final-noloader",
+      "configuration": "Debug",
+      "displayName": "No Loader Debug x64"
+    },
+    {
+      "name": "final-noloader-release",
+      "configurePreset": "final-noloader",
+      "configuration": "Release",
+      "displayName": "No Loader Release x64"
     }
   ],
   "packagePresets": [
@@ -139,6 +160,12 @@
       "name": "final-nvngxwrapper",
       "displayName": "Package Final Nvngx",
       "configurePreset": "final-nvngxwrapper",
+      "packageDirectory": "${sourceDir}/bin/built-packages"
+    },
+        {
+      "name": "final-noloader",
+      "displayName": "Package Final No Loader",
+      "configurePreset": "final-noloader",
       "packageDirectory": "${sourceDir}/bin/built-packages"
     }
   ]

@@ -32,13 +32,19 @@ set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION_MAJOR
 
 function(install_universal_variant PROXYDLL IMPLDLL ROOTDIR READMEDIR DLLNAME)
 
-    if (NOT DLLNAME STREQUAL "")
-        install(FILES "$<TARGET_FILE:${PROXYDLL}>" DESTINATION "${ROOTDIR}/" RENAME "${DLLNAME}")
-    else()
-        install(TARGETS ${PROXYDLL} RUNTIME DESTINATION "${ROOTDIR}/")
+    if (NOT PROXYDLL STREQUAL "")
+        if (NOT DLLNAME STREQUAL "")
+            install(FILES "$<TARGET_FILE:${PROXYDLL}>" DESTINATION "${ROOTDIR}/" RENAME "${DLLNAME}")
+        else()
+            install(TARGETS ${PROXYDLL} RUNTIME DESTINATION "${ROOTDIR}/")
+        endif()
     endif()
+
     install(TARGETS ${IMPLDLL} RUNTIME DESTINATION "${ROOTDIR}/")
-    install(FILES "${PROJECT_RESOURCES_PATH}/${READMEDIR}" DESTINATION "${ROOTDIR}/" RENAME "READ ME.txt")
+    
+    if (NOT READMEDIR STREQUAL "")
+        install(FILES "${PROJECT_RESOURCES_PATH}/${READMEDIR}" DESTINATION "${ROOTDIR}/" RENAME "READ ME.txt")
+    endif()
 
 endfunction()
 
@@ -72,6 +78,12 @@ elseif(BUILD_OUTPUT_WRAPPER STREQUAL "NVNGX")
         DESTINATION
             "/"
     )
+
+elseif(BUILD_OUTPUT_WRAPPER STREQUAL "NOLOADER")
+
+    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME} (No Loader)")
+
+    install_universal_variant("" dlssg_output_dll "" "" "")
 
 endif()
 
