@@ -69,16 +69,21 @@ jobs:
         run: |
           ${{ github.workspace }}/dependencies/Build-FFX-SDK.bat
 
-      # All variants get built here since I don't want to burn my action minutes on the Vulkan and FFX SDKs
+      # Only no loader version is built
       - name: Build dlssg-to-fsr3
         shell: pwsh
         run: |
           ${{ github.workspace }}/Make-Release.ps1
+          
+      - name: Extract the zip file
+        shell: pwsh
+        run: |
+          $zipPath = Get-ChildItem "${{ github.workspace }}\bin\built-packages\" -Filter *.zip | Select-Object -First 1
+          Expand-Archive -Path $zipPath.FullName -DestinationPath extracted-build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: 'dlssg-to-fsr3-ci-test'
-          path: |
-            ${{ github.workspace }}/bin/built-packages/*.zip
+          name: dlssg-to-fsr3-${{ github.ref_name }}
+          path: extracted-build/
           if-no-files-found: error
