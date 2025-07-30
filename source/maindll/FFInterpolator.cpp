@@ -108,6 +108,8 @@ FfxErrorCode FFInterpolator::CreateContextDeferred(const FFInterpolatorDispatchP
 	FfxFrameInterpolationContextDescription desc = {};
 	desc.backendInterface = m_BackendInterface;
 
+	desc.flags |= FFX_FRAMEINTERPOLATION_ENABLE_ASYNC_SUPPORT;
+	
 	if (Parameters.DepthInverted)
 		desc.flags |= FFX_FRAMEINTERPOLATION_ENABLE_DEPTH_INVERTED;
 
